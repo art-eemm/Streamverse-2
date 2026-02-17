@@ -13,12 +13,10 @@ import {
   LogOut,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { label } from "framer-motion/client";
-import { link } from "fs";
 
 const navLinks = [
-  { href: "/home", label: "Home" },
-  { href: "/home#categories", label: "Categories" },
+  { href: "/home", label: "Inicio" },
+  { href: "/home#categories", label: "Categorias" },
 ];
 
 export function Navbar() {
@@ -66,7 +64,7 @@ export function Navbar() {
         <Link href={"/home"} className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <span className="text-xl font-bold tracking-tight text-foreground font-sans">
-              Stream<span className="text-primary">Verse</span>
+              Stream<span className="text-blue-400">Verse</span>
             </span>
           </div>
         </Link>
@@ -138,7 +136,8 @@ export function Navbar() {
                       onClick={() => setIsProfileOpen(false)}
                       className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors font-sans"
                     >
-                      <User className="w-4 h-4">Perfil</User>
+                      <User className="w-4 h-4" />
+                      Perfil
                     </Link>
 
                     {isAdmin && (

@@ -9,7 +9,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "StreamVerse - Premium Streaming Platform",
+  title: "StreamVerse",
   description: "Descubre y ve miles de series y peliculas.",
   generator: "StreamVerse",
   keywords: ["streaming", "movies", "series", "entertainment", "watch online"],
