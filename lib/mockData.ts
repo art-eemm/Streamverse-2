@@ -59,21 +59,21 @@ export const movies: Movie[] = [
   },
   {
     id: "2",
-    title: "Spider-Man: Into the Spider-Verse",
+    title: "Joker",
     year: 2018,
     rating: 8.4,
-    category: "Acción",
+    category: "Drama",
     description:
-      "Después de reunirse con Gwen Stacy, Miles Morales, el amigable Spider-Man del vecindario de tiempo completo de Brooklyn, es catapultado a través del Multiverso, donde se encuentra con un equipo de Spider-People encargado de proteger su existencia. Pero cuando los héroes chocan sobre cómo manejar una nueva amenaza, Miles se enfrenta a las otras arañas y debe redefinir lo que significa ser un héroe para poder salvar a las personas que más ama.",
+      "Arthur Fleck es un hombre ignorado por la sociedad, cuya motivación en la vida es hacer reír. Pero una serie de trágicos acontecimientos le llevarán a ver el mundo de otra forma.",
     shortDescription:
-      "Miles se enfrenta a las otras arañas y debe redefinir lo que significa ser un héroe para poder salvar a las personas que más ama.",
+      "Una serie de trágicos acontecimientos le llevarán a ver el mundo de otra forma.",
     image:
-      "https://image.tmdb.org/t/p/original/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",
+      "https://image.tmdb.org/t/p/original/mZuAPY4ETMQPHhCXIcJ90kd6RaS.jpg",
     heroImage:
-      "https://image.tmdb.org/t/p/original/kVd3a9YeLGkoeR50jGEXM6EqseS.jpg",
+      "https://image.tmdb.org/t/p/original/gZWl93sf8AxavYpVT1Un6EF3oCj.jpg",
     trailerUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    duration: "2h 20min",
-    director: "Joaquim Dos Santos",
+    duration: "2h 2min",
+    director: "Todd Phillips",
     cast: ["David Park", "Sofia Reyes", "Marcus Webb"],
     featured: true,
   },
