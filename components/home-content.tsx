@@ -13,12 +13,16 @@ interface HomeContentProps {
 }
 
 export function HomeContent({ initialMovies, user }: HomeContentProps) {
-  const featuredMovies = initialMovies.filter((movie) => movie.featured);
+  const uniqueFeaturedMovies = Array.from(
+    new Map(
+      initialMovies.filter((m) => m.featured).map((m) => [m.id, m]),
+    ).values(),
+  );
   const categories = Array.from(new Set(initialMovies.map((m) => m.category)));
   return (
     <>
       <Suspense fallback={<HeroSkeleton />}>
-        <HeroCarousel movies={featuredMovies} />
+        <HeroCarousel movies={uniqueFeaturedMovies} />
       </Suspense>
 
       <div id="categories" className="relative z-10 -mt-16 pb-12">
