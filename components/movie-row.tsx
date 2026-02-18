@@ -62,7 +62,7 @@ export const MovieRow = memo(function MovieRow({
         <div
           ref={scrollRef}
           onScroll={checkScroll}
-          className="scrollbar-hide flex gap-3 overflow-x-auto px-4 lg:px-8"
+          className="flex gap-3 overflow-x-auto px-4 lg:px-8 no-scrollbar"
         >
           {movies.map((movie, i) => (
             <MovieCard key={movie.id} movie={movie} index={i} />
