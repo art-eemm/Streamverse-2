@@ -57,30 +57,31 @@ export default async function HomePage() {
     .eq("status", 1)
     .returns<MovieDB[]>();
 
-  if (error) {
-    console.error("Error al obtener las peliculas:", error);
-  }
+  if (error) console.error("Error al obtener las peliculas:", error);
 
   const movies: Movie[] =
-    moviesDB?.map((m) => {
+    moviesDB?.flatMap((m) => {
       const heroImgObj =
         m.images?.find((img) => img.type?.toLowerCase().trim() === "hero") ||
         m.images?.[0];
 
-      const firstCategory =
-        m.movie_categories?.[0]?.categories?.name || "General";
+      const categoriesFound = m.movie_categories
+        ?.map((mc) => mc.categories?.name)
+        .filter(Boolean) as string[];
+      const categoriesToMap =
+        categoriesFound.length > 0 ? categoriesFound : ["General"];
 
       const castList =
         m.movie_cast
           ?.map((mc) => mc.cast?.name)
           .filter((name): name is string => !!name) || [];
 
-      return {
+      return categoriesToMap.map((categoryName) => ({
         id: m.id.toString(),
         title: m.title,
         year: Number(m.year),
         rating: m.rating,
-        category: firstCategory,
+        category: categoryName,
         description: m.description,
         shortDescription: m.short_description,
         image: m.image_url || "/placeholder.jpg",
@@ -90,7 +91,7 @@ export default async function HomePage() {
         director: m.director,
         cast: castList,
         featured: m.featured,
-      };
+      }));
     }) || [];
 
   return (
