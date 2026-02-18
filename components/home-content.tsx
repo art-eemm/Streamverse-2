@@ -2,6 +2,8 @@
 
 import { Suspense } from "react";
 import { HeroCarousel } from "./hero-carousel";
+import { MovieRow } from "./movie-row";
+import { HeroSkeleton, MovieRowSkeleton } from "./skeleton-loader";
 import { categories, getMoviesByCategory } from "@/lib/mockData";
 
 export function HomeContent() {
@@ -15,7 +17,11 @@ export function HomeContent() {
         {categories.map((category) => {
           const categoryMovies = getMoviesByCategory(category);
           if (categoryMovies.length === 0) return null;
-          return <Suspense key={category}></Suspense>;
+          return (
+            <Suspense key={category} fallback={<MovieRowSkeleton />}>
+              <MovieRow title={category} movies={categoryMovies} />
+            </Suspense>
+          );
         })}
       </div>
     </>
