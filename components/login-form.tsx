@@ -2,16 +2,24 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
+  const router = useRouter();
+  const supabase = createClient();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    form?: string;
+  }>({});
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -29,10 +37,24 @@ export function LoginForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     if (validate()) {
-      // Para conexión con API
+      setLoading(true);
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setErrors({ form: "Credenciales incorrectas o error en el servidor" });
+        setLoading(false);
+      } else {
+        router.refresh();
+        router.push("/home");
+      }
     }
   };
 
@@ -141,11 +163,17 @@ export function LoginForm() {
               )}
             </div>
 
+            {errors.form && (
+              <div className="text-red-500 text-sm text-center bg-red-500/10 p-2 rounded">
+                {errors.form}
+              </div>
+            )}
             <button
               type="submit"
-              className="mt-1 w-full rounded-lg bg-blue-500 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-blue-500/90 hover:scale-[1.02] active:sclae-[0.98] font-sans"
+              disabled={loading}
+              className="mt-1 w-full rounded-lg bg-blue-500 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-blue-500/90 hover:scale-[1.02] active:sclae-[0.98] font-sans disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Iniciar sesión
+              {loading ? "Iniciando..." : "Iniciar sesión"}
             </button>
           </form>
 

@@ -4,33 +4,38 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Play, Info, ChevronLeft, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence, delay } from "framer-motion";
-import { featuredMovies } from "@/lib/mockData";
+import { motion, AnimatePresence } from "framer-motion";
+import { Movie } from "@/lib/mockData";
 
-export function HeroCarousel() {
+interface HeroCarouselProps {
+  movies: Movie[];
+}
+
+export function HeroCarousel({ movies }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const next = useCallback(() => {
-    setCurrent((prev) => (prev + 1) % featuredMovies.length);
-  }, []);
+    setCurrent((prev) => (prev + 1) % movies.length);
+  }, [movies.length]);
 
   const prev = useCallback(() => {
-    setCurrent(
-      (prev) => (prev - 1 + featuredMovies.length) % featuredMovies.length,
-    );
-  }, []);
+    setCurrent((prev) => (prev - 1 + movies.length) % movies.length);
+  }, [movies.length]);
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
 
   useEffect(() => {
+    if (movies.length === 0) return;
     const timer = setInterval(next, 7000);
     return () => clearInterval(timer);
-  }, [next]);
+  }, [next, movies.length]);
 
-  const movie = featuredMovies[current];
+  if (!movies || movies.length === 0) return null;
+
+  const movie = movies[current];
 
   if (!isLoaded) {
     return (
@@ -137,7 +142,7 @@ export function HeroCarousel() {
         </button>
 
         <div className="flex items-center gap-2">
-          {featuredMovies.map((_, idx) => (
+          {movies.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
