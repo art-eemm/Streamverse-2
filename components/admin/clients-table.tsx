@@ -3,22 +3,22 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { motion } from "framer-motion";
-import type { Movie } from "@/lib/mockData";
+import type { User } from "@/lib/mockData";
+
+interface ClientsTableProps {
+  initialUsers: User[];
+}
 
 const ITEMS_PER_PAGE = 8;
 
-interface MoviesTableProps {
-  movies: Movie[];
-}
-
-export function MoviesTable({ movies }: MoviesTableProps) {
+export function ClientsTable({ initialUsers }: ClientsTableProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const filtered = movies.filter(
-    (m) =>
-      m.title.toLowerCase().includes(search.toLowerCase()) ||
-      m.category.toLowerCase().includes(search.toLowerCase()),
+  const filtered = initialUsers.filter(
+    (u) =>
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase()),
   );
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
@@ -29,6 +29,7 @@ export function MoviesTable({ movies }: MoviesTableProps) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Search */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -39,15 +40,16 @@ export function MoviesTable({ movies }: MoviesTableProps) {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Buscar películas..."
-            className="w-full rounded-lg broder border-border bg-input px-4 py-2 pl-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 font-sans"
+            placeholder="Search users..."
+            className="w-full rounded-lg border border-border bg-input px-4 py-2 pl-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 font-sans"
           />
         </div>
         <p className="text-sm text-muted-foreground font-sans">
-          {filtered.length} películas
+          {filtered.length} users
         </p>
       </div>
 
+      {/* Table */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -58,51 +60,70 @@ export function MoviesTable({ movies }: MoviesTableProps) {
             <thead>
               <tr className="border-b border-border bg-secondary/50">
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider font-sans">
-                  Título
+                  User
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider font-sans">
-                  Categoría
+                  Role
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider font-sans">
-                  Año
+                  Joined
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider font-sans">
-                  Calificación
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider font-sans">
-                  Duración
+                  Status
                 </th>
               </tr>
             </thead>
             <tbody>
-              {paginated.map((movie) => (
+              {paginated.map((user) => (
                 <tr
-                  key={movie.id}
+                  key={user.id}
                   className="border-b border-border last:border-0 transition-colors hover:bg-secondary/30"
                 >
                   <td className="px-4 py-3">
-                    <p className="text-sm font-medium text-foreground font-sans">
-                      {movie.title}
-                    </p>
-                    <p className="text-xs text-foreground font-sans">
-                      {movie.director}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-medium text-primary font-sans">
+                          {user.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground font-sans">
+                          {user.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground font-sans">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-primary font-sans">
-                      {movie.category}
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium font-sans ${
+                        user.role === "admin"
+                          ? "bg-primary/10 text-primary"
+                          : "bg-secondary text-secondary-foreground"
+                      }`}
+                    >
+                      {user.role}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground font-sans">
-                    {movie.year}
+                    {new Date(user.joinedDate).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm font-medium text-yellow-400 font-sans">
-                      {"★"} {movie.rating}
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium font-sans ${
+                        user.status === "active"
+                          ? "bg-emerald-500/10 text-emerald-400"
+                          : "bg-red-500/10 text-red-400"
+                      }`}
+                    >
+                      {user.status}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground font-sans">
-                    {movie.duration}
                   </td>
                 </tr>
               ))}
@@ -111,17 +132,18 @@ export function MoviesTable({ movies }: MoviesTableProps) {
         </div>
       </motion.div>
 
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground font-sans">
-            Página {page} de {totalPages}
+            Page {page} of {totalPages}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
               className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Anterior"
+              aria-label="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -142,7 +164,7 @@ export function MoviesTable({ movies }: MoviesTableProps) {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
               className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Siguiente"
+              aria-label="Next page"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

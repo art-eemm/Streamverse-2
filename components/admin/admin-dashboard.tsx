@@ -4,20 +4,39 @@ import { useState } from "react";
 import { AdminSidebar, type AdminView } from "./admin-sidebar";
 import { DashboardOverview } from "./dashboard-overview";
 import { MoviesTable } from "./movies-table";
+import { ClientsTable } from "./clients-table";
+import { AddMovieForm } from "./add-movie";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Movie, User } from "@/lib/mockData";
 
-export function AdminDashboard() {
+interface AdminDashboardProps {
+  initialMovies: Movie[];
+  initialUsers: User[];
+}
+
+export function AdminDashboard({
+  initialMovies,
+  initialUsers,
+}: AdminDashboardProps) {
   const [activeView, setActiveView] = useState<AdminView>("dashboard");
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const renderContent = () => {
     switch (activeView) {
       case "dashboard":
-        return <DashboardOverview />;
+        return (
+          <DashboardOverview movies={initialMovies} users={initialUsers} />
+        );
       case "movies":
-        return <MoviesTable />;
+        return <MoviesTable movies={initialMovies} />;
+      case "users":
+        return <ClientsTable initialUsers={initialUsers} />;
+      case "add-movie":
+        return <AddMovieForm />;
       default:
-        return <DashboardOverview />;
+        return (
+          <DashboardOverview movies={initialMovies} users={initialUsers} />
+        );
     }
   };
 
