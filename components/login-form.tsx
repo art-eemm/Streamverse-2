@@ -22,6 +22,7 @@ export function LoginForm() {
   }>({});
   const [isReseting, setIsResetting] = useState(false);
   const [resetMessage, setResetMessage] = useState("");
+  const [isResetSuccess, setIsResetSuccess] = useState(false);
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -70,6 +71,7 @@ export function LoginForm() {
 
     setIsResetting(true);
     setResetMessage("");
+    setIsResetSuccess(false);
     setErrors({});
 
     try {
@@ -83,6 +85,7 @@ export function LoginForm() {
 
       if (!res.ok) throw new Error(data.error || "Error desconocido");
 
+      setIsResetSuccess(true);
       setResetMessage("Te enviamos una nueva contraseña.");
     } catch (error: unknown) {
       let errorMessage = "Ocurrió un error inesperado";
@@ -96,6 +99,7 @@ export function LoginForm() {
         errorMessage = String(error.message);
       }
 
+      setIsResetSuccess(false);
       setResetMessage(`Error: ${errorMessage}`);
     } finally {
       setIsResetting(false);
@@ -138,7 +142,7 @@ export function LoginForm() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 className={`mb-6 p-3 rounded-lg text-sm font-medium font-sans text-center ${
-                  resetMessage.includes("✅")
+                  isResetSuccess
                     ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                     : "bg-red-500/10 text-red-500 border border-red-500/20"
                 }`}

@@ -13,6 +13,8 @@ import {
   LogOut,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { href: "/home", label: "Inicio" },
@@ -20,20 +22,29 @@ const navLinks = [
 ];
 
 export function Navbar() {
+  const router = useRouter();
+  const supabase = createClient();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // para pruebas el usuario es admin, eliminar después
-  const isAdmin = true;
+  const [userData, setUserData] = useState<{
+    name: string;
+    email: string;
+    initial: string;
+    role: string;
+  } | null>(null);
+
+  const isAdmin = userData?.role === "admin";
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("srcoll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -48,6 +59,42 @@ export function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("first_name, email, role")
+          .eq("id", session.user.id)
+          .single();
+
+        if (profile) {
+          const name = profile.first_name || "Usuario";
+          setUserData({
+            name: name,
+            email: profile.email || session.user.email || "",
+            initial: name.charAt(0).toUpperCase(),
+            role: profile.role || "user",
+          });
+        }
+      }
+    }
+
+    fetchUser();
+  }, [supabase]);
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
+    setIsProfileOpen(false);
+    setIsMobileMenuOpen(false);
+    router.push("/");
+  };
 
   return (
     <motion.header
@@ -104,7 +151,7 @@ export function Navbar() {
             >
               <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="text-xs font-medium text-primary font-sans">
-                  U
+                  {userData?.initial || "U"}
                 </span>
               </div>
               <ChevronDown
@@ -123,10 +170,10 @@ export function Navbar() {
                 >
                   <div className="px-4 py-3 border-b border-border">
                     <p className="text-sm font-medium text-foreground font-sans">
-                      Usuario
+                      {userData?.name || "Cargando..."}
                     </p>
                     <p className="text-xs text-muted-foreground font-sans">
-                      user@streamverse.com
+                      {userData?.email || ""}
                     </p>
                   </div>
 
@@ -153,14 +200,13 @@ export function Navbar() {
                   </div>
 
                   <div className="border-t border-border py-1.5">
-                    <Link
-                      href="/"
-                      onClick={() => setIsProfileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 text-sm text-destructive hover:bg-muted/50 transition-colors font-sans"
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-destructive hover:bg-muted/50 transition-colors font-sans hover:cursor-pointer"
                     >
                       <LogOut className="h-4 w-4" />
                       Cerrar sesión
-                    </Link>
+                    </button>
                   </div>
                 </motion.div>
               )}
@@ -190,6 +236,22 @@ export function Navbar() {
             className="overflow-hidden bg-background/95 backdrop-blur-md border-b border-border md:hidden"
           >
             <div className="flex flex-col gap-4 px-4 py-6">
+              <div className="flex items-center gap-3 mb-2 border-b border-border pb-4">
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-sm font-medium text-primary font-sans">
+                    {userData?.initial || "U"}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground font-sans truncate">
+                    {userData?.name || "Cargando..."}
+                  </p>
+                  <p className="text-xs text-muted-foreground font-sans truncate">
+                    {userData?.email || ""}
+                  </p>
+                </div>
+              </div>
+
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -213,13 +275,12 @@ export function Navbar() {
               )}
 
               <div className="border-t border-border pt-4 flex gap-4">
-                <Link
-                  href="/"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-sm text-destructive font-medium font-sans"
+                <button
+                  onClick={handleLogout}
+                  className="text-sm text-destructive font-medium font-sans w-full text-left"
                 >
                   Cerrar sesión
-                </Link>
+                </button>
               </div>
             </div>
           </motion.div>
