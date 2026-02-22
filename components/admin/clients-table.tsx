@@ -29,7 +29,6 @@ export function ClientsTable({ initialUsers }: ClientsTableProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Search */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -49,7 +48,6 @@ export function ClientsTable({ initialUsers }: ClientsTableProps) {
         </p>
       </div>
 
-      {/* Table */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -132,7 +130,6 @@ export function ClientsTable({ initialUsers }: ClientsTableProps) {
         </div>
       </motion.div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground font-sans">

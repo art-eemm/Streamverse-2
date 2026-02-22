@@ -46,14 +46,12 @@ export function AdminSidebar({
         isCollapsed ? "w-16" : "w-60"
       }`}
     >
-      {/* 1. CORRECCIÓN EN EL HEADER (TÍTULO Y BOTÓN) */}
       <div
         className={`flex items-center p-4 border-b border-border h-[65px] ${
           isCollapsed ? "justify-center" : "justify-between"
         }`}
       >
         <AnimatePresence>
-          {/* Aquí estaba invertido, debe ser !isCollapsed */}
           {!isCollapsed && (
             <motion.div
               initial={{ opacity: 0, width: 0 }}
@@ -70,7 +68,6 @@ export function AdminSidebar({
           )}
         </AnimatePresence>
 
-        {/* El botón siempre se renderiza, solo cambia su posición/icono */}
         <button
           onClick={onToggle}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
@@ -120,18 +117,14 @@ export function AdminSidebar({
         </ul>
       </nav>
 
-      {/* 2. CORRECCIÓN EN EL PERFIL (FOOTER) */}
       <div
         className={`border-t border-border p-4 flex ${isCollapsed ? "justify-center" : ""}`}
       >
-        {/* El avatar (círculo) siempre se muestra */}
         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
           <span className="text-xs font-medium text-primary font-sans">A</span>
         </div>
 
-        {/* Los textos solo se muestran si no está colapsado */}
         <AnimatePresence>
-          {/* Aquí también estaba invertido, debe ser !isCollapsed */}
           {!isCollapsed && (
             <motion.div
               initial={{ opacity: 0, width: 0, marginLeft: 0 }}

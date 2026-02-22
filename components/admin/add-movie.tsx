@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent } from "react"; // <-- 1. Importamos el tipo de evento de React
+import { ChangeEvent } from "react";
 import {
   Film,
   User,
