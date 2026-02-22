@@ -60,7 +60,7 @@ export default async function AdminPage() {
       email: u.email,
       role: u.role as "admin" | "user",
       joinedDate: new Date(u.created_at).toISOString().split("T")[0],
-      status: "active",
+      status: u.status === 0 ? "inactive" : "active",
     })) || [];
 
   return (

@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 
 const navLinks = [
   { href: "/home", label: "Inicio" },
-  { href: "/home#categories", label: "Categorias" },
+  // { href: "/home#categories", label: "Categorias" },
 ];
 
 export function Navbar() {

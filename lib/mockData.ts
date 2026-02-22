@@ -13,6 +13,7 @@ export interface Movie {
   director: string;
   cast: string[];
   featured?: boolean;
+  status: number;
 }
 
 export interface MovieDB {
@@ -51,4 +52,5 @@ export interface ProfileDB {
   role: string;
   created_at: string;
   updated_at: string | null;
+  status: number;
 }

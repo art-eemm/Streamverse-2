@@ -111,7 +111,7 @@ export function MovieDetail({ movie, relatedMovies }: MovieDetailProps) {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="shrink-0"
               >
-                <div className="relative mx-auto w-48 md:w-64 aspect-[2/3] overflow-hidden rounded-xl shadow-2xl lg:mx-0">
+                <div className="relative mx-auto w-48 md:w-64 aspect-2/3 overflow-hidden rounded-xl shadow-2xl lg:mx-0">
                   <Image
                     src={movie.image}
                     alt={movie.title}
