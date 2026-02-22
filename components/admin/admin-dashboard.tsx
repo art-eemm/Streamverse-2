@@ -68,7 +68,7 @@ export function AdminDashboard({
           </div>
         </header>
 
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-6 no-scrollbar">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeView}

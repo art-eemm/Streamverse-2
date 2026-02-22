@@ -1,4 +1,3 @@
-// En lib/utils.ts
 import { type Movie, type MovieDB } from "./mockData";
 
 export function formatMoviesFromDB(
@@ -38,6 +37,7 @@ export function formatMoviesFromDB(
       director: m.director,
       cast: castList,
       featured: m.featured,
+      status: m.status,
     }));
   });
 }

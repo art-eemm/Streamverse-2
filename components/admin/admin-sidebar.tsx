@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Film,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
 
 export type AdminView =
   | "dashboard"
@@ -40,6 +42,41 @@ export function AdminSidebar({
   isCollapsed,
   onToggle,
 }: AdminSidebarProps) {
+  const [adminInfo, setAdminInfo] = useState({
+    name: "Cargando...",
+    email: "...",
+    initial: "...",
+  });
+
+  useEffect(() => {
+    async function fetchAdminData() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // Buscamos su nombre en la tabla profiles
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("first_name, last_name_paternal")
+          .eq("id", user.id)
+          .single();
+
+        const firstName = profile?.first_name || "Admin";
+        const lastName = profile?.last_name_paternal || "";
+        const fullName = `${firstName} ${lastName}`.trim();
+
+        setAdminInfo({
+          name: fullName,
+          email: user.email || "",
+          initial: firstName.charAt(0).toUpperCase(),
+        });
+      }
+    }
+    fetchAdminData();
+  }, []);
+
   return (
     <aside
       className={`flex flex-col border-r border-border bg-card transition-all duration-300 ${
@@ -47,7 +84,7 @@ export function AdminSidebar({
       }`}
     >
       <div
-        className={`flex items-center p-4 border-b border-border h-[65px] ${
+        className={`flex items-center p-4 border-b border-border h-15 ${
           isCollapsed ? "justify-center" : "justify-between"
         }`}
       >
@@ -121,7 +158,9 @@ export function AdminSidebar({
         className={`border-t border-border p-4 flex ${isCollapsed ? "justify-center" : ""}`}
       >
         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-          <span className="text-xs font-medium text-primary font-sans">A</span>
+          <span className="text-xs font-medium text-primary font-sans">
+            {adminInfo.initial}
+          </span>
         </div>
 
         <AnimatePresence>
@@ -133,10 +172,10 @@ export function AdminSidebar({
               className="overflow-hidden whitespace-nowrap flex flex-col justify-center"
             >
               <p className="text-sm font-medium text-foreground truncate font-sans">
-                Admin
+                {adminInfo.name}
               </p>
               <p className="text-xs text-muted-foreground truncate font-sans">
-                admin@gmail.com
+                {adminInfo.email}
               </p>
             </motion.div>
           )}
