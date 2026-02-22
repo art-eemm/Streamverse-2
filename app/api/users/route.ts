@@ -1,8 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 export async function POST(request: Request) {
   try {
@@ -37,8 +43,8 @@ export async function POST(request: Request) {
 
     if (profileError) throw profileError;
 
-    const { error: emailError } = await resend.emails.send({
-      from: "StreamVerse <onboarding@resend.dev>",
+    await transporter.sendMail({
+      from: `"StreamVerse" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Tus credenciales de acceso a StreamVerse",
       html: `
@@ -55,13 +61,6 @@ export async function POST(request: Request) {
         </div>
       `,
     });
-
-    if (emailError) {
-      console.error("Error al enviar correo:", emailError);
-      throw new Error(
-        "Usuario creado, pero hubo un problema enviando el correo.",
-      );
-    }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

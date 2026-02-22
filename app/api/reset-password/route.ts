@@ -1,8 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 export async function POST(request: Request) {
   try {
@@ -39,9 +45,9 @@ export async function POST(request: Request) {
 
     if (updateError) throw updateError;
 
-    await resend.emails.send({
-      from: "StreamVerse <onboarding@resend.dev>",
-      to: email, // Recuerda: en capa gratuita de Resend, solo te llegará si es tu propio correo
+    await transporter.sendMail({
+      from: `"StreamVerse" <${process.env.EMAIL_USER}>`,
+      to: email,
       subject: "Recuperación de contraseña - StreamVerse",
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
@@ -59,7 +65,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    console.error("🔴 ERROR REAL EN EL BACKEND:");
+    console.error("ERROR REAL EN EL BACKEND:");
     console.dir(error);
 
     let errorMessage = "Ocurrió un error interno";
