@@ -252,7 +252,7 @@ export function LoginForm() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-muted-foreground font-sans">
+          {/* <p className="mt-6 text-center text-sm text-muted-foreground font-sans">
             {"¿No tienes una cuenta? "}
             <Link
               href={"/register"}
@@ -260,7 +260,7 @@ export function LoginForm() {
             >
               Registrarse
             </Link>
-          </p>
+          </p> */}
         </div>
       </motion.div>
     </div>
