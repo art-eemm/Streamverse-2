@@ -8,11 +8,11 @@ export function useAddMovie() {
     year: "",
     duration: "",
     rating: "",
-    category: "",
+    categories: "",
     description: "",
     cast: "",
     imageUrl: "",
-    heroImageUrl: "",
+    heroImageUrls: "",
     trailerUrl: "",
     featured: false,
   });
@@ -52,19 +52,23 @@ export function useAddMovie() {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!form.title.trim()) newErrors.title = "El título es requerido";
-    if (!form.director.trim()) newErrors.director = "El director es requerido";
-    if (!form.year.trim()) newErrors.year = "El año es requerido";
+    if (!form.title.trim()) newErrors.title = "El título es obligatorio";
+    if (!form.director.trim())
+      newErrors.director = "El director es obligatorio";
+    if (!form.year.trim()) newErrors.year = "El año es obligatorio";
     else if (isNaN(Number(form.year)) || Number(form.year) < 1900)
-      newErrors.year = "Ingrese un año válido";
-    if (!form.duration.trim()) newErrors.duration = "La duración es requerida";
-    if (!form.category.trim()) newErrors.category = "La categoría es requerida";
+      newErrors.year = "Ingresa un año válido";
+    if (!form.duration.trim())
+      newErrors.duration = "La duración es obligatoria";
+    if (!form.categories.trim())
+      newErrors.categories = "Las categorías son obligatorias";
     if (!form.description.trim())
-      newErrors.description = "La descripción es requerida";
+      newErrors.description = "La descripción es obligatoria";
     if (!form.imageUrl.trim())
-      newErrors.imageUrl = "La URL de la imagen es requerida";
+      newErrors.imageUrl = "La URL del póster es obligatoria";
     if (!form.trailerUrl.trim())
-      newErrors.trailerUrl = "La URL del trailer es requerida";
+      newErrors.trailerUrl = "La URL del tráiler es obligatoria";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -77,6 +81,7 @@ export function useAddMovie() {
       setIsLoading(true);
 
       try {
+        // 1. Guardar la película base
         const { data: newMovie, error: movieError } = await supabase
           .from("movies")
           .insert({
@@ -101,50 +106,68 @@ export function useAddMovie() {
         if (movieError) throw movieError;
         const movieId = newMovie.id;
 
-        if (form.heroImageUrl.trim()) {
-          const { error: imageError } = await supabase.from("images").insert({
-            movie_id: movieId,
-            url: form.heroImageUrl.trim(),
-            type: "hero",
-          });
-
-          if (imageError)
-            console.error("Error al guardar imagen hero:", imageError);
-        }
-
-        if (form.category) {
-          let categoryId;
-          const { data: existingCat } = await supabase
-            .from("categories")
-            .select("id")
-            .ilike("name", form.category.trim())
-            .single();
-
-          if (existingCat) {
-            categoryId = existingCat.id;
-          } else {
-            const { data: newCat } = await supabase
-              .from("categories")
-              .insert({ name: form.category.trim() })
-              .select("id")
-              .single();
-            if (newCat) categoryId = newCat.id;
-          }
-
-          if (categoryId) {
-            await supabase.from("movie_categories").insert({
+        // 2. Guardar MÚLTIPLES imágenes Hero (separadas por coma o salto de línea)
+        if (form.heroImageUrls.trim()) {
+          // split(/[\n,]+/) separa por comas o saltos de línea
+          const urls = form.heroImageUrls
+            .split(/[\n,]+/)
+            .map((u) => u.trim())
+            .filter(Boolean);
+          for (const url of urls) {
+            const { error: imageError } = await supabase.from("images").insert({
               movie_id: movieId,
-              category_id: categoryId,
+              url: url,
+              type: "hero",
             });
+            if (imageError)
+              console.error("Error al guardar imagen hero:", imageError);
           }
         }
 
+        // 3. Guardar MÚLTIPLES categorías (separadas por coma)
+        if (form.categories.trim()) {
+          const cats = form.categories
+            .split(",")
+            .map((c) => c.trim())
+            .filter(Boolean);
+
+          for (const catName of cats) {
+            let categoryId;
+            // Buscar si la categoría ya existe (ignorando mayúsculas/minúsculas)
+            const { data: existingCat } = await supabase
+              .from("categories")
+              .select("id")
+              .ilike("name", catName)
+              .single();
+
+            if (existingCat) {
+              categoryId = existingCat.id;
+            } else {
+              // Si no existe, crearla
+              const { data: newCat } = await supabase
+                .from("categories")
+                .insert({ name: catName })
+                .select("id")
+                .single();
+              if (newCat) categoryId = newCat.id;
+            }
+
+            // Vincular la categoría con la película
+            if (categoryId) {
+              await supabase.from("movie_categories").insert({
+                movie_id: movieId,
+                category_id: categoryId,
+              });
+            }
+          }
+        }
+
+        // 4. Guardar Elenco (Cast)
         if (form.cast.trim()) {
           const actors = form.cast
             .split(",")
             .map((a) => a.trim())
             .filter(Boolean);
-
           for (const actor of actors) {
             let castId;
             const { data: existingCast } = await supabase
@@ -175,23 +198,23 @@ export function useAddMovie() {
 
         setSubmitted(true);
         setTimeout(() => setSubmitted(false), 3000);
+
         setForm({
           title: "",
           director: "",
           year: "",
           duration: "",
           rating: "",
-          category: "",
+          categories: "",
           description: "",
           cast: "",
           imageUrl: "",
-          heroImageUrl: "",
+          heroImageUrls: "",
           trailerUrl: "",
           featured: false,
         });
       } catch (error: unknown) {
         console.dir(error);
-
         if (error instanceof Error) {
           setDbError(error.message);
         } else if (

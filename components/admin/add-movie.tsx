@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAddMovie } from "@/hooks/useAddMovie";
-import { FormInput, FormTextarea } from "@/components/ui/form-input";
+import { FormInput, FormTextarea } from "../ui/form-input";
 
 export function AddMovieForm() {
   const {
@@ -119,7 +119,7 @@ export function AddMovieForm() {
           <div className="grid grid-cols-2 gap-4">
             <FormInput
               id="rating"
-              label="Calificación"
+              label="Calificación (Opcional)"
               icon={Star}
               value={form.rating}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -130,42 +130,30 @@ export function AddMovieForm() {
             />
 
             <div>
-              <label
-                htmlFor="category"
-                className="mb-1.5 block text-sm font-medium text-foreground font-sans"
-              >
-                Categoría
-              </label>
-              <div className="relative">
-                <Tag className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  id="category"
-                  list="categories-list"
-                  value={form.category}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    update("category", e.target.value)
-                  }
-                  disabled={isLoading}
-                  placeholder="Ej. Acción"
-                  className={`w-full rounded-lg border bg-input px-4 py-2.5 pl-10 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors font-sans ${errors.category ? "border-destructive" : "border-border"}`}
-                />
-                <datalist id="categories-list">
-                  {dbCategories.map((cat) => (
-                    <option key={cat} value={cat} />
-                  ))}
-                </datalist>
-              </div>
-              {errors.category && (
-                <p className="mt-1 text-xs text-destructive font-sans">
-                  {errors.category}
-                </p>
-              )}
+              <FormInput
+                id="categories"
+                label="Categorías (Separadas por comas)"
+                icon={Tag}
+                value={form.categories}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  update("categories", e.target.value)
+                }
+                placeholder="Ej. Acción, Ciencia Ficción"
+                disabled={isLoading}
+                error={errors.categories}
+                list="categories-list"
+              />
+              <datalist id="categories-list">
+                {dbCategories.map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
             </div>
           </div>
 
           <FormInput
             id="cast"
-            label="Elenco (Separado por comas, opcional)"
+            label="Elenco (Separado por comas)"
             icon={User}
             value={form.cast}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -179,7 +167,7 @@ export function AddMovieForm() {
             <FormInput
               id="imageUrl"
               type="url"
-              label="URL del Póster"
+              label="URL del Póster (Principal)"
               icon={ImageIcon}
               value={form.imageUrl}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -190,31 +178,32 @@ export function AddMovieForm() {
               error={errors.imageUrl}
             />
             <FormInput
-              id="heroImageUrl"
+              id="trailerUrl"
               type="url"
-              label="URL Banner Hero"
-              icon={Layout}
-              value={form.heroImageUrl}
+              label="URL del Tráiler"
+              icon={Video}
+              value={form.trailerUrl}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                update("heroImageUrl", e.target.value)
+                update("trailerUrl", e.target.value)
               }
-              placeholder="https://ejemplo.com/hero.jpg"
+              placeholder="https://youtube.com/watch?v=..."
               disabled={isLoading}
+              error={errors.trailerUrl}
             />
           </div>
 
-          <FormInput
-            id="trailerUrl"
-            type="url"
-            label="URL del Tráiler"
-            icon={Video}
-            value={form.trailerUrl}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              update("trailerUrl", e.target.value)
+          {/* Múltiples Imágenes Hero usando un Textarea */}
+          <FormTextarea
+            id="heroImageUrls"
+            label="URLs Banners Hero (Separadas por comas o saltos de línea)"
+            icon={Layout}
+            value={form.heroImageUrls}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              update("heroImageUrls", e.target.value)
             }
-            placeholder="https://youtube.com/watch?v=..."
+            placeholder="https://ejemplo.com/hero1.jpg&#10;https://ejemplo.com/hero2.jpg"
+            rows={3}
             disabled={isLoading}
-            error={errors.trailerUrl}
           />
 
           <FormTextarea
