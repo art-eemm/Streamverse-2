@@ -119,7 +119,7 @@ export function AddMovieForm() {
           <div className="grid grid-cols-2 gap-4">
             <FormInput
               id="rating"
-              label="Calificación (Opcional)"
+              label="Calificación"
               icon={Star}
               value={form.rating}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
