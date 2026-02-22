@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
@@ -20,6 +20,8 @@ export function LoginForm() {
     password?: string;
     form?: string;
   }>({});
+  const [isReseting, setIsResetting] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -58,6 +60,48 @@ export function LoginForm() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrors({
+        email: "Ingresa tu correo válido arriba para recuperar tu cuenta",
+      });
+      return;
+    }
+
+    setIsResetting(true);
+    setResetMessage("");
+    setErrors({});
+
+    try {
+      const res = await fetch("/api/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Error desconocido");
+
+      setResetMessage("Te enviamos una nueva contraseña.");
+    } catch (error: unknown) {
+      let errorMessage = "Ocurrió un error inesperado";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
+        errorMessage = String(error.message);
+      }
+
+      setResetMessage(`Error: ${errorMessage}`);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="absolute inset-0 overflow-hidden">
@@ -86,6 +130,23 @@ export function LoginForm() {
               Inicia sesión en tu cuenta para continuar
             </p>
           </div>
+
+          <AnimatePresence>
+            {resetMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className={`mb-6 p-3 rounded-lg text-sm font-medium font-sans text-center ${
+                  resetMessage.includes("✅")
+                    ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                    : "bg-red-500/10 text-red-500 border border-red-500/20"
+                }`}
+              >
+                {resetMessage}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div>
@@ -126,6 +187,16 @@ export function LoginForm() {
               >
                 Contraseña
               </label>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={loading || isReseting}
+                className="text-xs font-medium text-blue-400 hover:text-blue-300 hover:underline transition-colors disabled:opacity-50"
+              >
+                {isReseting
+                  ? "Enviando correo..."
+                  : "¿Olvidaste tu contraseña?"}
+              </button>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
