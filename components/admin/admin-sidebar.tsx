@@ -42,15 +42,22 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   return (
     <aside
-      className={`flex flex-col border-r border-border bg-card transition-all duration-300 ${isCollapsed ? "w-16" : "w-60"}`}
+      className={`flex flex-col border-r border-border bg-card transition-all duration-300 ${
+        isCollapsed ? "w-16" : "w-60"
+      }`}
     >
-      <div className="flex items-center justify-between p-4 border-b border-border">
+      <div
+        className={`flex items-center p-4 border-b border-border h-[65px] ${
+          isCollapsed ? "justify-center" : "justify-between"
+        }`}
+      >
         <AnimatePresence>
-          {isCollapsed && (
+          {!isCollapsed && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              exit={{ opacity: 0, width: 0 }}
+              className="overflow-hidden whitespace-nowrap"
             >
               <Link href={"/home"} className="flex items-center gap-1.5">
                 <span className="text-base font-bold tracking-tight text-foreground font-sans">
@@ -60,9 +67,10 @@ export function AdminSidebar({
             </motion.div>
           )}
         </AnimatePresence>
+
         <button
           onClick={onToggle}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           aria-label={isCollapsed ? "Mostrar Sidebar" : "Ocultar Sidebar"}
         >
           {isCollapsed ? (
@@ -109,28 +117,27 @@ export function AdminSidebar({
         </ul>
       </nav>
 
-      <div className="border-t border-border p-4">
+      <div
+        className={`border-t border-border p-4 flex ${isCollapsed ? "justify-center" : ""}`}
+      >
+        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+          <span className="text-xs font-medium text-primary font-sans">A</span>
+        </div>
+
         <AnimatePresence>
-          {isCollapsed && (
+          {!isCollapsed && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center gap-3"
+              initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+              animate={{ opacity: 1, width: "auto", marginLeft: 12 }}
+              exit={{ opacity: 0, width: 0, marginLeft: 0 }}
+              className="overflow-hidden whitespace-nowrap flex flex-col justify-center"
             >
-              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                <span className="text-xs font-medium text-primary font-sans">
-                  A
-                </span>
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-sm font-medium text-foreground truncate font-sans">
-                  Admin
-                </p>
-                <p className="text-xs text-muted-foreground truncate font-sans">
-                  admin@gmail.com
-                </p>
-              </div>
+              <p className="text-sm font-medium text-foreground truncate font-sans">
+                Admin
+              </p>
+              <p className="text-xs text-muted-foreground truncate font-sans">
+                admin@gmail.com
+              </p>
             </motion.div>
           )}
         </AnimatePresence>

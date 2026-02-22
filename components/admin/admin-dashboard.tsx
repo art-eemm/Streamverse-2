@@ -6,6 +6,7 @@ import { DashboardOverview } from "./dashboard-overview";
 import { MoviesTable } from "./movies-table";
 import { ClientsTable } from "./clients-table";
 import { AddMovieForm } from "./add-movie";
+import { AddUserForm } from "./add-user";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Movie, User } from "@/lib/mockData";
 
@@ -33,6 +34,8 @@ export function AdminDashboard({
         return <ClientsTable initialUsers={initialUsers} />;
       case "add-movie":
         return <AddMovieForm />;
+      case "add-user":
+        return <AddUserForm />;
       default:
         return (
           <DashboardOverview movies={initialMovies} users={initialUsers} />
