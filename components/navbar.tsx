@@ -133,13 +133,13 @@ export function Navbar() {
             className="text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Search"
           >
-            <Search className="h-5 w-5" />
+            {/* <Search className="h-5 w-5" /> */}
           </button>
           <button
             className="text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Notifications"
           >
-            <Bell className="h-5 w-5" />
+            {/* <Bell className="h-5 w-5" /> */}
           </button>
 
           <div className="relative" ref={profileRef}>
